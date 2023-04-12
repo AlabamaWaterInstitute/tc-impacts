@@ -11,23 +11,23 @@ import os
 # In command line, you will get a name of state. ex: AL
 strInputState = input('Input your state\n')
 
-# as you can see, this is some urls of data-page.
+# These are some urls of data-page that we are acquiring the data.
 html_doc = ''
 url1 = 'https://www.aoml.noaa.gov/hrd/hurdat/UShurrs_detailed.html'
 url2 = 'https://www.aoml.noaa.gov/hrd/hurdat/uststorms.html'
 
-###---------the processing for first url----------------------
+###---------The processing for first url----------------------
 try:
-    request = urllib.request.Request(url1) # make a request(get) for fetching html page.
-    response = urllib.request.urlopen(request) # get a handle of html page by using the request.
-    html_doc = response.read()  # read a page in style of text, 
-except Exception as ee: # if some exception is occured
+    request = urllib.request.Request(url1) # Make a request(get) for fetching html page.
+    response = urllib.request.urlopen(request) # Get handle of html page by using the request.
+    html_doc = response.read()  # read page in style of text
+except Exception as ee: # If some exception is occured
     print(ee)
     print("Request Error.")
     input('Press Enter to exit.')
     exit()
 
-def handleCellStr(_strCell, _bDelBar = True):   # a function for processing a cell of table.
+def handleCellStr(_strCell, _bDelBar = True):   # Function for processing a cell of table.
     strCell = _strCell.replace('\t', '')
     strCell = strCell.replace('\n', '')
     if _bDelBar == True:
@@ -37,13 +37,13 @@ def handleCellStr(_strCell, _bDelBar = True):   # a function for processing a ce
 
 title = ['Name of Storm', 'No', 'Type', 'Estimated Landfall', 'Estimated Max Winds', 'Severity']    # columns in a table
 
-export_date = datetime.datetime.now()   # get a date and time
+export_date = datetime.datetime.now()   # get date and time
 
-    # produce a name of excel file.
+    # produce name for the excel file.
 export_xlsfname = export_date.strftime('%m') + '.' + \
                export_date.strftime('%d') + '.' + \
                export_date.strftime('%Y') + '_' + strInputState + '.xlsx'  
-if os.path.exists(export_xlsfname): # if the file of same name is exist already
+if os.path.exists(export_xlsfname): # if the file with same name exists already
     try:
         os.rename(export_xlsfname, export_xlsfname + '_')
         os.rename(export_xlsfname + '_', export_xlsfname)
@@ -52,10 +52,10 @@ if os.path.exists(export_xlsfname): # if the file of same name is exist already
         exit()
 
 results = []
-    # html page have to be converted into lxml
+    # html page to be converted into lxml
 bs_soup = BeautifulSoup(html_doc, "lxml")
 tag_lines = None
-try:    # look for a part for analysation.
+try:    # look for the analyzation part.
     tag_lines = bs_soup.find('td', {'id': 'tdcontent'}).find('div').find('font').find('table').findAll('tr')
 except Exception as ee:
     print(ee)
@@ -63,7 +63,7 @@ except Exception as ee:
     input('Press Enter to exit.')
     exit()
 
-    # if data is null,
+    # if data is null
 if tag_lines == None or len(tag_lines) == 0:
     print("No Content")
     input('Press Enter to exit.')
@@ -101,7 +101,7 @@ for tr_line in tag_lines:
     strStates = handleCellStr(strStates)
     strStormNames = handleCellStr(strStormNames)
         
-        # For the changing of date style
+        # For the change of date style
     while True:
         try:
             temp = strDate[len(strDate) - 1:]
@@ -136,7 +136,7 @@ for tr_line in tag_lines:
     if bState == False:
         continue
         
-    # from the severity number, get some characters such as H(Hurricanes), and MH(Major Hurricanes).
+    # from the severity number, classify them as H(Hurricanes), and MH(Major Hurricanes).
 
     strType = ''
     if strStateLast == '1':
